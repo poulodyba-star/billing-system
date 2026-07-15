@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEW CITY GLASS - Premium POS Terminal V2</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --brand-navy: #0f172a;
+            --brand-blue: #1e40af;
+            --text-dark: #334155;
+            --border-color: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #e2e8f0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .control-panel-wrapper {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--brand-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 3px;
+        }
+
+        .segment-tabs {
+            display: flex;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-align: center;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            color: #64748b;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            color: var(--brand-blue);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .input-group {
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .field-lbl {
+            font-size: 11px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .input-box {
+            width: 100%;
+            height: 38px;
+            padding: 0 10px;
+            font-size: 13px;
+            font-weight: 600;
+            background-color: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+        }
+
+        .input-box:focus {
+            border-color: var(--brand-blue);
+            background-color: #ffffff;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn-add {
+            width: 100%;
+            height: 40px;
+            background: var(--brand-blue);
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 700;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .search-overlay-box {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #94a3b8;
+            border-radius: 6px;
+            margin-top: 3px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 99999;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            display: none;
+        }
+
+        .search-row {
+            padding: 10px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .search-row:hover {
+            background-color: #eff6ff;
+            color: var(--brand-blue);
+        }
+
+        /* -----------------------------------------------
+           PURE WHITE PRINTABLE BILL CARD
+        -------------------------------------------------- */
+        .pure-bill-card {
+            background: #ffffff;
+            padding: 25px 20px;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .bill-header-node {
+            text-align: center;
+            border-bottom: 2px solid var(--brand-navy);
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+
+        .bill-header-node h1 {
+            font-size: 26px;
+            color: var(--brand-navy);
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .bill-header-node p {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 2px;
+            text-transform: uppercase;
+        }
+
+        .bill-meta-grid {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #334155;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .doc-badge {
+            display: inline-block;
+            background: var(--brand-navy);
+            color: #ffffff;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .bill-render-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+
+        .bill-render-table th {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #475569;
+            background-color: #f8fafc;
+            border-top: 1px solid #cbd5e1;
+            border-bottom: 2px solid #cbd5e1;
+            padding: 8px 4px;
+        }
+
+        .bill-render-table td {
+            padding: 10px 4px;
+            font-size: 12px;
+            color: var(--text-dark);
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .action-btn-group {
+            display: inline-flex;
+            gap: 6px;
+            margin-left: 8px;
+        }
+
+        .edit-row-btn {
+            background: none;
+            border: none;
+            color: #1e40af;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .delete-cross-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .bill-total-summary-panel {
+            border-top: 2px solid var(--brand-navy);
+            padding-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bill-total-summary-panel span {
+            font-size: 13px;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .bill-total-summary-panel h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--brand-navy);
+        }
+
+        .action-tray {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .tray-btn {
+            height: 50px;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .btn-generate { background-color: #1e40af; box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3); }
+        .btn-download { background-color: #0f172a; width: 100%; }
+        .btn-whatsapp { background-color: #25d366; width: 100%; }
+
+        /* Output Modal Box for absolute Mobile Reliability */
+        .output-modal {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px dashed var(--brand-blue);
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .output-modal img {
+            width: 100%;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+        
+        /* SIDE BY SIDE GRID FOR THE SPLIT BUTTONS */
+        .split-buttons-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    
+    <!-- 1. CONTROL Setup PANEL -->
+    <div class="control-panel-wrapper">
+        <div class="section-title">Invoice / Setup Console</div>
+        
+        <div class="segment-tabs">
+            <button class="tab-btn" id="tabQuote" onclick="changeDocMode('QUOTATION')">QUOTATION</button>
+            <button class="tab-btn active" id="tabInvoice" onclick="changeDocMode('INVOICE')">INVOICE</button>
+        </div>
+
+        <div class="grid-2">
+            <div class="input-group">
+                <label class="field-lbl">Invoice No</label>
+                <input type="text" id="inBillNo" placeholder="e.g. NCG-1001" class="input-box" oninput="syncBillMeta()">
+            </div>
+            <div class="input-group">
+                <label class="field-lbl">Date</label>
+                <input type="date" id="inBillDate" class="input-box" oninput="syncBillMeta()">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label class="field-lbl">Customer Name</label>
+            <input type="text" id="inCustName" placeholder="Customer Name" class="input-box" oninput="syncBillMeta()">
+        </div>
+        <div class="input-group">
+            <label class="field-lbl">City / Phone Number</label>
+            <input type="text" id="inCustCity" placeholder="City or Contact No" class="input-box" oninput="syncBillMeta()">
+        </div>
+
+        <div class="section-title">Item Configuration</div>
+        
+        <div class="input-group">
+            <label class="field-lbl">Calculation Base Mode</label>
+            <select id="calcModeSelect" class="input-box" onchange="toggleFormInputs()">
+                <option value="GLASS">Glass Logic (SqFt Calculation)</option>
+                <option value="HARDWARE">Hardware Logic (Flat Qty Multiplier)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label class="field-lbl">Item Search / Description</label>
+            <input type="text" id="inSearch" placeholder="Type name or custom item description..." class="input-box" oninput="runInstantOverlaySearch()">
+            <div class="search-overlay-box" id="overlayPanel"></div>
+        </div>
+
+        <div id="glassMeasurementSection">
+            <div class="input-group">
+                <label class="field-lbl">Measurement Scale Unit</label>
+                <select id="inUnit" class="input-box">
+                    <option value="inch">Inches (inch)</option>
+                    <option value="ft">Feet (ft)</option>
+                    <option value="mm">Millimeters (mm)</option>
+                    <option value="cm">Centimeters (cm)</option>
+                </select>
+            </div>
+
+            <div class="grid-3">
+                <div class="input-group">
+                    <label class="field-lbl">Width</label>
+                    <input type="number" id="inW" value="1" step="any" class="input-box">
+                </div>
+                <div class="input-group">
+                    <label class="field-lbl">Height</label>
+                    <input type="number" id="inH" value="1" step="any" class="input-box">
+                </div>
+                <div class="input-group">
+                    <label class="field-lbl">Qty</label>
+                    <input type="number" id="inQtyGlass" value="1" class="input-box">
+                </div>
+            </div>
+        </div>
+
+        <div id="hardwareSection" style="display: none;">
+            <div class="input-group">
+                <label class="field-lbl">Quantity (Pcs / Nos)</label>
+                <input type="number" id="inQtyHardware" value="1" class="input-box">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label class="field-lbl">Unit Price / Rate (Rs.)</label>
+            <input type="number" id="inPrice" class="input-box" placeholder="0.00" step="any">
+        </div>
+
+        <button class="btn-add" id="btnAddItem" onclick="pushItemRow()">+ Add Item To Invoice</button>
+    </div>
+
+    <!-- 2. PURE WHITE PRINTABLE BILL CARD -->
+    <div class="pure-bill-card" id="cleanBillCanvas">
+        <div class="bill-header-node">
+            <h1>NEW CITY GLASS</h1>
+            <p id="lblDocSubText">COMPUTER GENERATED INVOICE</p>
+        </div>
+
+        <div class="bill-meta-grid">
+            <div>
+                <strong>INVOICE TO:</strong><br>
+                <span id="lblMetaName">Valued Customer</span><br>
+                <span id="lblMetaCity">Negombo</span>
+            </div>
+            <div style="text-align: right;">
+                <div class="doc-badge" id="lblMetaDocType">INVOICE</div><br>
+                <span style="font-size: 12px; font-weight: bold; color: var(--brand-navy); display: inline-block; margin-top: 5px;" id="lblMetaBillNo">No: NCG-677</span><br>
+                <span style="font-size: 11px; color:#64748b;" id="lblMetaDate">Date: 2026-07-09</span>
+            </div>
+        </div>
+
+        <table class="bill-render-table">
+            <thead>
+                <tr>
+                    <th style="width: 8%; text-align: center;">S.No</th>
+                    <th style="width: 42%; text-align: left;">Item / Description</th>
+                    <th style="width: 15%; text-align: right;">Rate</th>
+                    <th style="width: 15%; text-align: center;">Size / Qty</th>
+                    <th style="width: 20%; text-align: right;">Amount</th>
+                </tr>
+            </thead>
+            <tbody id="billLedgerTargetBody"></tbody>
+        </table>
+
+        <div class="bill-total-summary-panel">
+            <span id="lblTotalType">INVOICE NET TOTAL</span>
+            <h2>Rs. <span id="lblTotalValue">0.00</span></h2>
+        </div>
+    </div>
+
+    <!-- 3. ACTION TRAY -->
+    <div class="action-tray">
+        <button class="tray-btn btn-generate" onclick="generateInvoiceImageOnly()">⚡ GENERATE INVOICE IMAGE</button>
+    </div>
+
+    <!-- 4. FINAL RELIABLE OUTPUT WORKSPACE WITH SIDE-BY-SIDE BUTTONS -->
+    <div class="output-modal" id="outputArea">
+        <div style="font-size: 13px; font-weight: bold; color: var(--brand-blue);">✓ INVOICE IMAGE READY!</div>
+        <img id="outputPreviewImg" alt="Invoice Preview">
+        
+        <!-- TWO SPLIT BUTTONS GENERATED AS SOUGHT -->
+        <div class="split-buttons-container">
+            <button class="tray-btn btn-download" onclick="triggerDirectDownload()">📥 DOWNLOAD</button>
+            <button class="tray-btn btn-whatsapp" onclick="triggerGroupRedirect()">💬 WHATSAPP</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let globalActiveProduct = null;
+    let localDataItemsArray = [];
+    let activeDocumentMode = "INVOICE";
+    let generatedImageBase64 = null;
+
+    const TARGET_WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/Fhm7LFuRqUeFg3mJuZUJMT?s=cl&p=a&ilr=2&amv=0";
+
+    const inventoryMasterSet = [
+        { id: "4", name: "PG 2MM CLEAR FLOAT GLASS 4 X 3", price: 1900.00, type: "GLASS" },
+        { id: "16", name: "WEATHER SEAL 12MM", price: 540.00, type: "HARDWARE" },
+        { id: "19", name: "FLOOR HINGES VVP FC34", price: 15500.00, type: "HARDWARE" },
+        { id: "21", name: "FT10 BOTTOM PATCH", price: 2625.00, type: "HARDWARE" },
+        { id: "22", name: "FT40 L BRACKET VVP", price: 2300.00, type: "HARDWARE" },
+        { id: "26", name: "GLASS TO GLASS LOCK ROUND LOCK", price: 6450.00, type: "HARDWARE" },
+        { id: "139", name: "MACFOAM ROD 8MM", price: 30.00, type: "HARDWARE" },
+        { id: "140", name: "MACFOAM ROD 10MM", price: 40.00, type: "HARDWARE" },
+        { id: "148", name: "BOX BAR 1X1 NA 12FT", price: 2969.00, type: "HARDWARE" },
+        { id: "339", name: "SILICONE GP CLEAR", price: 1150.00, type: "HARDWARE" },
+        { id: "588", name: "SS BOX HANDLE 8", price: 460.00, type: "HARDWARE" }
+    ];
+
+    function initializeBillMetadata() {
+        const today = new Date();
+        document.getElementById('inBillDate').value = today.toISOString().split('T')[0];
+        document.getElementById('inBillNo').value = "NCG-677"; 
+        syncBillMeta();
+        changeDocMode('INVOICE'); 
+    }
+    window.onload = initializeBillMetadata;
+
+    function changeDocMode(mode) {
+        activeDocumentMode = mode;
+        document.getElementById('tabQuote').classList.toggle('active', mode === 'QUOTATION');
+        document.getElementById('tabInvoice').classList.toggle('active', mode === 'INVOICE');
+        document.getElementById('lblMetaDocType').innerText = mode;
+        document.getElementById('lblTotalType').innerText = mode + " NET TOTAL";
+        document.getElementById('lblDocSubText').innerText = "COMPUTER GENERATED " + mode;
+    }
+
+    // Handle measurements layout based on glass or hardware
+    function toggleFormInputs() {
+        const mode = document.getElementById('calcModeSelect').value;
+        document.getElementById('glassMeasurementSection').style.display = (mode === "GLASS") ? "block" : "none";
+        document.getElementById('hardwareSection').style.display = (mode === "HARDWARE") ? "block" : "none";
+    }
+
+    function syncBillMeta() {
+        const billNo = document.getElementById('inBillNo').value.trim();
+        const billDate = document.getElementById('inBillDate').value;
+        const name = document.getElementById('inCustName').value.trim();
+        const city = document.getElementById('inCustCity').value.trim();
+        
+        document.getElementById('lblMetaBillNo').innerText = billNo ? "No: " + billNo : "No: ---";
+        document.getElementById('lblMetaDate').innerText = billDate ? "Date: " + billDate : "Date: ---";
+        document.getElementById('lblMetaName').innerText = name ? name : "Valued Customer";
+        document.getElementById('lblMetaCity').innerText = city ? city : "Negombo";
+    }
+
+    function runInstantOverlaySearch() {
+        const query = document.getElementById('inSearch').value.toUpperCase();
+        const popup = document.getElementById('overlayPanel');
+        popup.innerHTML = '';
+
+        if (!query) { popup.style.display = 'none'; return; }
+
+        const hits = inventoryMasterSet.filter(item => item.name.toUpperCase().includes(query) || item.id.includes(query));
+        if (hits.length === 0) { popup.style.display = 'none'; return; }
+
+        popup.style.display = 'block';
+        hits.slice(0, 8).forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'search-row';
+            div.innerHTML = `<span>[ID: ${item.id}] ${item.name}</span> <span style="color:var(--brand-blue)">Rs.${item.price}</span>`;
+            div.onclick = () => {
+                globalActiveProduct = item;
+                document.getElementById('inSearch').value = item.name;
+                document.getElementById('inPrice').value = item.price;
+                document.getElementById('calcModeSelect').value = item.type;
+                toggleFormInputs();
+                popup.style.display = 'none';
+                if(item.type === "GLASS") { document.getElementById('inW').focus(); } else { document.getElementById('inQtyHardware').focus(); }
+            };
+            popup.appendChild(div);
+        });
+    }
+
+    function runSqFtEngine(w, h, unit) {
+        if (unit === 'ft') return w * h;
+        if (unit === 'inch') {
+            function customInchRule(v) {
+                if(v <= 12) return 1.0;
+                if(v > 12 && v <= 18) return 1.5;
+                return v / 12;
+            }
+            return customInchRule(w) * customInchRule(h);
+        }
+        if (unit === 'cm') return (w / 30.48) * (h / 30.48);
+        if (unit === 'mm') return (w / 304.8) * (h / 304.8);
+        return 0;
+    }
+
+    function pushItemRow() {
+        const title = document.getElementById('inSearch').value.trim();
+        const rate = parseFloat(document.getElementById('inPrice').value) || 0;
+        const calcMode = document.getElementById('calcModeSelect').value;
+
+        if (!title) { alert("Please type or select an item description first."); return; }
+
+        let entry = { 
+            id: 'id_' + Math.random().toString(36).substr(2, 5), 
+            name: title, 
+            type: calcMode, 
+            rate: rate, 
+            totalCost: 0,
+            rawW: 1,
+            rawH: 1,
+            rawQty: 1,
+            rawUnit: 'inch'
+        };
+
+        if(calcMode === "GLASS") {
+            const w = parseFloat(document.getElementById('inW').value) || 0;
+            const h = parseFloat(document.getElementById('inH').value) || 0;
+            const qty = parseFloat(document.getElementById('inQtyGlass').value) || 1;
+            const unit = document.getElementById('inUnit').value;
+            const calculatedSqFt = runSqFtEngine(w, h, unit);
+            
+            entry.rawW = w;
+            entry.rawH = h;
+            entry.rawQty = qty;
+            entry.rawUnit = unit;
+            
+            entry.measurementInfo = `${w}x${h} ${unit}<br><small style="color:#64748b">${calculatedSqFt.toFixed(2)} SqFt x ${qty}</small>`;
+            entry.totalCost = calculatedSqFt * rate * qty;
+        } else {
+            const qty = parseFloat(document.getElementById('inQtyHardware').value) || 1;
+            entry.rawQty = qty;
+            entry.measurementInfo = `${qty} Nos`;
+            entry.totalCost = rate * qty;
+        }
+
+        localDataItemsArray.push(entry);
+        refreshBillTable();
+        clearInputs();
+    }
+
+    function refreshBillTable() {
+        const body = document.getElementById('billLedgerTargetBody');
+        body.innerHTML = '';
+        let currentTotalSum = 0;
+
+        localDataItemsArray.forEach((item, index) => {
+            currentTotalSum += item.totalCost;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="text-align: center; font-weight: 600; color: #64748b;">${index + 1}</td>
+                <td><strong>${item.name}</strong></td>
+                <td style="text-align: right;">${item.rate.toFixed(2)}</td>
+                <td style="text-align: center; font-weight: 600;">${item.measurementInfo}</td>
+                <td style="text-align: right; font-weight: 700; color: var(--brand-navy);">
+                    ${item.totalCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                    <div class="action-btn-group">
+                        <button class="edit-row-btn" onclick="editRow('${item.id}', event)">📝</button>
+                        <button class="delete-cross-btn" onclick="dropRow('${item.id}', event)">✕</button>
+                    </div>
+                </td>
+            `;
+            body.appendChild(tr);
+        });
+
+        document.getElementById('lblTotalValue').innerText = currentTotalSum.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById('outputArea').style.display = 'none'; 
+    }
+
+    function editRow(rowId, e) {
+        e.stopPropagation();
+        const targetItem = localDataItemsArray.find(item => item.id === rowId);
+        if (!targetItem) return;
+
+        // Populate configuration panel back
+        document.getElementById('inSearch').value = targetItem.name;
+        document.getElementById('inPrice').value = targetItem.rate;
+        document.getElementById('calcModeSelect').value = targetItem.type;
+        toggleFormInputs();
+
+        if (targetItem.type === "GLASS") {
+            document.getElementById('inW').value = targetItem.rawW;
+            document.getElementById('inH').value = targetItem.rawH;
+            document.getElementById('inQtyGlass').value = targetItem.rawQty;
+            document.getElementById('inUnit').value = targetItem.rawUnit;
+        } else {
+            document.getElementById('inQtyHardware').value = targetItem.rawQty;
+        }
+
+        // Remove old row entry from array and update view
+        localDataItemsArray = localDataItemsArray.filter(item => item.id !== rowId);
+        refreshBillTable();
+        
+        // Focus user back to console panel top
+        document.getElementById('inSearch').focus();
+    }
+
+    function dropRow(rowId, e) {
+        e.stopPropagation();
+        localDataItemsArray = localDataItemsArray.filter(item => item.id !== rowId);
+        refreshBillTable();
+    }
+
+    function clearInputs() {
+        document.getElementById('inSearch').value = '';
+        document.getElementById('inPrice').value = '';
+        document.getElementById('inW').value = '1';
+        document.getElementById('inH').value = '1';
+        document.getElementById('inQtyGlass').value = '1';
+        document.getElementById('inQtyHardware').value = '1';
+        globalActiveProduct = null;
+    }
+
+    // STEP 1: GENERATE PREVIEW IMAGE Safely
+    function generateInvoiceImageOnly() {
+        if(localDataItemsArray.length === 0) {
+            alert("Please add at least one item first.");
+            return;
+        }
+
+        const targetBillCanvasArea = document.getElementById('cleanBillCanvas');
+        const actionGroups = document.querySelectorAll('.action-btn-group');
+        
+        actionGroups.forEach(grp => grp.style.display = 'none');
+
+        html2canvas(targetBillCanvasArea, { scale: 3, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
+            actionGroups.forEach(grp => grp.style.display = 'inline-flex');
+            
+            generatedImageBase64 = canvas.toDataURL('image/png');
+            
+            document.getElementById('outputPreviewImg').src = generatedImageBase64;
+            document.getElementById('outputArea').style.display = 'flex';
+            
+            document.getElementById('outputArea').scrollIntoView({ behavior: 'smooth' });
+        });
+    }
+
+    // STEP 2: STABLE CLICK DOWNLOAD ACTION
+    function triggerDirectDownload() {
+        if (!generatedImageBase64) return;
+        const billNo = document.getElementById('inBillNo').value.trim() || "677";
+        
+        const dlAnchor = document.createElement('a');
+        dlAnchor.href = generatedImageBase64;
+        dlAnchor.download = `${activeDocumentMode}_${billNo}.png`;
+        document.body.appendChild(dlAnchor);
+        dlAnchor.click();
+        document.body.removeChild(dlAnchor);
+    }
+
+    // STEP 3: REDIRECT TO TARGET GROUP
+    function triggerGroupRedirect() {
+        window.open(TARGET_WHATSAPP_GROUP_URL, '_blank');
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.classList.contains('input-box')) {
+            document.getElementById('overlayPanel').style.display = 'none';
+        }
+    });
+</script>
+</body>
+</html>
